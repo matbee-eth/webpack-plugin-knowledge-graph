@@ -116,28 +116,6 @@ const Component = sequelize.define('Component', {
   },
 });
 
-// const Property = sequelize.define('Property', {
-//   name: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-// });
-
-// const Method = sequelize.define('Method', {
-//   name: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-// });
-
-// const Dependency = sequelize.define('Dependency', {
-//   name: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-// });
-
-
 // Associations
 File.belongsTo(Directory);
 Directory.hasMany(File);
