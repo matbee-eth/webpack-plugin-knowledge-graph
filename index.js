@@ -49,7 +49,8 @@ class DatasetExportPlugin {
                 console.log('File updated:', file.path);
               } else {
                 // Create a new file record
-                const [_file, createdFile] = await File.findOrCreate({ transaction, where: { path: name, DirectoryId: directory?.id ?? createdDirectory?.id },
+                const [_file, createdFile] = await File.findOrCreate({
+                  transaction, where: { path: name, DirectoryId: directory?.id ?? createdDirectory?.id },
                   ignoreDuplicates: true,
                 })
                 file = _file;
@@ -65,42 +66,42 @@ class DatasetExportPlugin {
                 { transaction, updateOnDuplicate: ['name', 'FileId'] }
               );
 
-              // Insert class properties, methods, dependencies, and generic types
-              for (const [index, classObj] of classes.entries()) {
-                const classRecord = classRecords[index];
-                // Update the class record if it already exists
-                await Property.bulkCreate(
-                  classObj.properties.map((property) => ({
-                    name: property.name,
-                    ClassId: classRecord.id,
-                  })),
-                  { transaction, updateOnDuplicate: ['name', 'ClassId'] }
-                );
+              // // Insert class properties, methods, dependencies, and generic types
+              // for (const [index, classObj] of classes.entries()) {
+              //   const classRecord = classRecords[index];
+              //   // Update the class record if it already exists
+              //   await Property.bulkCreate(
+              //     classObj.properties.map((property) => ({
+              //       name: property.name,
+              //       ClassId: classRecord.id,
+              //     })),
+              //     { transaction, updateOnDuplicate: ['name', 'ClassId'] }
+              //   );
 
-                await Method.bulkCreate(
-                  classObj.methods.map((method) => ({
-                    name: method.name,
-                    ClassId: classRecord.id,
-                  })),
-                  { transaction, updateOnDuplicate: ['name', 'ClassId'] }
-                );
+              //   await Method.bulkCreate(
+              //     classObj.methods.map((method) => ({
+              //       name: method.name,
+              //       ClassId: classRecord.id,
+              //     })),
+              //     { transaction, updateOnDuplicate: ['name', 'ClassId'] }
+              //   );
 
-                await Dependency.bulkCreate(
-                  classObj.dependencies.map((dependency) => ({
-                    name: dependency.name,
-                    ClassId: classRecord.id,
-                  })),
-                  { transaction, updateOnDuplicate: ['name', 'ClassId'] }
-                );
+              //   await Dependency.bulkCreate(
+              //     classObj.dependencies.map((dependency) => ({
+              //       name: dependency.name,
+              //       ClassId: classRecord.id,
+              //     })),
+              //     { transaction, updateOnDuplicate: ['name', 'ClassId'] }
+              //   );
 
-                await GenericType.bulkCreate(
-                  classObj.genericTypes.map((genericType) => ({
-                    name: genericType.name,
-                    ClassId: classRecord.id,
-                  })),
-                  { transaction, updateOnDuplicate: ['name', 'ClassId'] }
-                );
-              }
+              //   await GenericType.bulkCreate(
+              //     classObj.genericTypes.map((genericType) => ({
+              //       name: genericType.name,
+              //       ClassId: classRecord.id,
+              //     })),
+              //     { transaction, updateOnDuplicate: ['name', 'ClassId'] }
+              //   );
+              // }
               // Insert the interface records and associate them with the file
               const interfaceRecords = await Interface.bulkCreate(
                 interfaces.map((interfaceObj) => ({
@@ -109,41 +110,41 @@ class DatasetExportPlugin {
                 })),
                 { transaction, updateOnDuplicate: ['name', 'FileId'] }
               );
-              // Insert interface properties, methods, dependencies, and generic types
-              for (const [index, interfaceObj] of interfaces.entries()) {
-                const interfaceRecord = interfaceRecords[index];
+              // // Insert interface properties, methods, dependencies, and generic types
+              // for (const [index, interfaceObj] of interfaces.entries()) {
+              //   const interfaceRecord = interfaceRecords[index];
 
-                await Property.bulkCreate(
-                  interfaceObj.properties.map((property) => ({
-                    name: property.name,
-                    InterfaceId: interfaceRecord.id,
-                  })),
-                  { transaction, updateOnDuplicate: ['name', 'InterfaceId'] }
-                );
+              //   await Property.bulkCreate(
+              //     interfaceObj.properties.map((property) => ({
+              //       name: property.name,
+              //       InterfaceId: interfaceRecord.id,
+              //     })),
+              //     { transaction, updateOnDuplicate: ['name', 'InterfaceId'] }
+              //   );
 
-                await Method.bulkCreate(
-                  interfaceObj.methods.map((method) => ({
-                    name: method.name,
-                    InterfaceId: interfaceRecord.id,
-                  })),
-                  { transaction, updateOnDuplicate: ['name', 'InterfaceId'] }
-                );
+              //   await Method.bulkCreate(
+              //     interfaceObj.methods.map((method) => ({
+              //       name: method.name,
+              //       InterfaceId: interfaceRecord.id,
+              //     })),
+              //     { transaction, updateOnDuplicate: ['name', 'InterfaceId'] }
+              //   );
 
-                await Dependency.bulkCreate(
-                  interfaceObj.dependencies.map((dependency) => ({
-                    name: dependency.name,
-                    InterfaceId: interfaceRecord.id,
-                  })),
-                  { transaction, updateOnDuplicate: ['name', 'InterfaceId'] }
-                );
+              //   await Dependency.bulkCreate(
+              //     interfaceObj.dependencies.map((dependency) => ({
+              //       name: dependency.name,
+              //       InterfaceId: interfaceRecord.id,
+              //     })),
+              //     { transaction, updateOnDuplicate: ['name', 'InterfaceId'] }
+              //   );
 
-                if (interfaceObj.genericTypes) {
-                  await GenericType.findOrCreate({
-                    name: interfaceObj.genericTypes,
-                    InterfaceId: interfaceRecord.id,
-                  }, { transaction, updateOnDuplicate: ['name', 'InterfaceId'] });
-                }
-              }
+              //   if (interfaceObj.genericTypes) {
+              //     await Type.findOrCreate({
+              //       name: interfaceObj.genericTypes,
+              //       InterfaceId: interfaceRecord.id,
+              //     }, { transaction, updateOnDuplicate: ['name', 'InterfaceId'] });
+              //   }
+              // }
               console.info("inserting types", types)
               if (types.length > 0) {
                 // Insert the type records and associate them with the file
@@ -156,7 +157,7 @@ class DatasetExportPlugin {
                   { transaction, updateOnDuplicate: ['name', 'definition', 'FileId'] }
                 );
               }
-
+              console.info("inserting enums", enums)
               // Insert the enum records and associate them with the file
               const enumRecords = await Enum.bulkCreate(
                 enums.map((enumObj) => ({
@@ -180,27 +181,33 @@ class DatasetExportPlugin {
               }
 
               const typeNames = [...new Set(functions.map(func => func.returnType))];
+              
+              console.info("Inserting Types Type.bulkCreate", typeNames)
               const insertedTypes = await Type.bulkCreate(
                 typeNames.map(name => ({ name })),
                 { transaction, ignoreDuplicates: true }
               );
 
               // Insert the function records and associate them with the file
-              console.info("Inserting Functions Function.bulkCreate", functions[0])
+              console.info("Inserting Functions Function.bulkCreate", functions[0], file.id, insertedTypes)
               await Function.bulkCreate(
-                functions.map((functionObj) => ({
-                  name: functionObj.name,
-                  returnType: functionObj.returnType,
-                  FileId: file.id,
-                  TypeId: insertedTypes.find(type => type.name === functionObj.returnType).id,
-                })),
+                functions.map((functionObj) => {
+                  const returnType = insertedTypes.find(type => type.name === functionObj.returnType);
+                  return {
+                    name: functionObj.name,
+                    returnType: functionObj.returnType,
+                    FileId: file.id,
+                    TypeId: returnType?.id,
+                  };
+                }),
                 {
                   transaction,
-                  updateOnDuplicate: ['name', 'returnType', 'FileId'],
+                  updateOnDuplicate: ['name', 'returnType', 'FileId', 'TypeId'],
                 }
               );
+              
 
-              console.info("Inserting generic types", functions[0].genericTypes)
+              console.info("Inserting generic types", functions[0]?.genericTypes)
               // Insert function generic types
               for (const functionObj of functions) {
                 const functionRecord = await Function.findOne({
@@ -224,18 +231,27 @@ class DatasetExportPlugin {
                   transaction,
                 });
                 console.log("functionObj.parameters", functionObj.parameters)
+                // TODO: Add Type if not exists
                 const parameterRecords = await Variable.bulkCreate(
-                  functionObj.parameters.map((parameter) => ({ name: parameter })),
-                  { transaction, updateOnDuplicate: ['name'] }
-                );
-
-                await FunctionHasParameter.bulkCreate(
-                  parameterRecords.map((parameterRecord) => ({
-                    FunctionId: functionRecord.id,
-                    VariableId: parameterRecord.id,
+                  await Promise.all(functionObj.parameters.map(async (parameter) => {
+                    let typeName = parameter.type;
+                    if (Array.isArray(typeName)) {
+                      // Convert the array to a JSON string
+                      typeName = JSON.stringify(typeName);
+                    }
+                    let type = await Type.findOne({ where: { name: typeName } });
+                    if (!type) {
+                      type = await Type.create({ name: typeName }, { transaction });
+                    }
+                    return {
+                      name: parameter.name,
+                      TypeId: type.id,
+                    };
                   })),
-                  { transaction, updateOnDuplicate: ['FunctionId', 'VariableId'] }
+                  { transaction, updateOnDuplicate: ['name', 'TypeId'] }
                 );
+                              
+                await functionRecord.setParameters(parameterRecords, { transaction });
               }
 
               // Insert the import records and associate them with the file

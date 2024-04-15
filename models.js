@@ -1,112 +1,141 @@
 const { Sequelize, DataTypes } = require('sequelize');
 
 const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: 'knowledge_graph.sqlite',
-    retry: {
-        match: [/SQLITE_BUSY/],
-        max: 0, // Maximum number of retries
-      },
-      transactionType: 'IMMEDIATE',
+  dialect: 'sqlite',
+  storage: 'knowledge_graph.sqlite',
+  retry: {
+    match: [/SQLITE_BUSY/],
+    max: 0, // Maximum number of retries
+  },
+  transactionType: 'IMMEDIATE',
 });
 
 const File = sequelize.define('File', {
-    path: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-    },
+  path: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
 });
 
 const Directory = sequelize.define('Directory', {
-    path: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-    },
+  path: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
 });
 
 const Class = sequelize.define('Class', {
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 });
 
 const Interface = sequelize.define('Interface', {
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 });
 
 const Type = sequelize.define('Type', {
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 });
 
 const Enum = sequelize.define('Enum', {
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 });
 
 const Function = sequelize.define('Function', {
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 });
 
 const Variable = sequelize.define('Variable', {
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+});
+
+const FunctionHasParameter = sequelize.define('FunctionHasParameter', {}, {
+  uniqueKeys: {
+    functionParameterScope: {
+      fields: ['FunctionId', 'VariableId'],
     },
+  },
 });
 
 // Import model
 const Import = sequelize.define('Import', {
-    path: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    names: {
-        type: DataTypes.JSON,
-        allowNull: false,
-    },
-    defaultImport: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
+  path: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  names: {
+    type: DataTypes.JSON,
+    allowNull: false,
+  },
+  defaultImport: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 
 // Export model
 const Export = sequelize.define('Export', {
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 });
 
 // Component model
 const Component = sequelize.define('Component', {
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    props: {
-        type: DataTypes.JSON,
-        allowNull: false,
-    },
-    genericTypes: {
-        type: DataTypes.JSON,
-        allowNull: true,
-    },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  props: {
+    type: DataTypes.JSON,
+    allowNull: false,
+  },
+  genericTypes: {
+    type: DataTypes.JSON,
+    allowNull: true,
+  },
 });
+
+// const Property = sequelize.define('Property', {
+//   name: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+// });
+
+// const Method = sequelize.define('Method', {
+//   name: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+// });
+
+// const Dependency = sequelize.define('Dependency', {
+//   name: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+// });
 
 
 // Associations
@@ -156,16 +185,16 @@ File.hasMany(Component);
 Component.belongsTo(File);
 
 module.exports = {
-    sequelize,
-    File,
-    Directory,
-    Class,
-    Interface,
-    Type,
-    Enum,
-    Function,
-    Variable,
-    Import,
-    Export,
-    Component,
+  sequelize,
+  File,
+  Directory,
+  Class,
+  Interface,
+  Type,
+  Enum,
+  Function,
+  Variable,
+  Import,
+  Export,
+  Component,
 };
