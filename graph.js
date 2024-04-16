@@ -1,25 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { sequelize, File, Directory, Class, Interface, Type, Enum, Function, Variable, Import, Export, Component } = require('./models');
-function createClassNode(record, label) {
-  const attributes = record.attributes ? record.attributes.map((attr) => `${attr.visibility || ''}${attr.name}: ${attr.type}`).join('\n') : '';
-  const methods = record.methods ? record.methods.map((method) => `${method.visibility || ''}${method.name}(${method.parameters.map((param) => param.type).join(', ')}): ${method.returnType}`).join('\n') : '';
 
-  return `class ${record.name} {
-    ${attributes}
-    ${methods}
-  }`;
-}
-
-// Function to create Mermaid nodes
-function createNode(record, label) {
-  return `${record.name ?? label ?? record.id}${record.path ? `["${record.path}"]` : ''}`;
-}
-
-// Function to create Mermaid edges
-function createEdge(fromId, toId, label) {
-  return `${fromId} --> ${toId}["${label}"]`;
-}
 async function generateMermaidGraph(file) {
   try {
     if (!file) {

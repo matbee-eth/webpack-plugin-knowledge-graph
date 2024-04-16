@@ -5,12 +5,11 @@ const parquet = require('@dsnp/parquetjs');
 const { sequelize, schema, Directory, File, Class, Property, Method, Dependency, GenericType, Interface, Type, Enum, EnumMember, Function, Import, Export, Component, Variable } = require('./models');
 const { parseTypeScriptCode } = require('typescript-splitter');
 
-class DatasetExportPlugin {
+class KnowledgeGraphPlugin {
   constructor(options) {
 
     this.options = {
       fileExtensions: options.fileExtensions || ['.ts', '.tsx'],
-      outputPath: options.outputPath || 'dataset.parquet',
       debug: options.debug || false,
     };
 
@@ -66,42 +65,6 @@ class DatasetExportPlugin {
                 { transaction, updateOnDuplicate: ['name', 'FileId'] }
               );
 
-              // // Insert class properties, methods, dependencies, and generic types
-              // for (const [index, classObj] of classes.entries()) {
-              //   const classRecord = classRecords[index];
-              //   // Update the class record if it already exists
-              //   await Property.bulkCreate(
-              //     classObj.properties.map((property) => ({
-              //       name: property.name,
-              //       ClassId: classRecord.id,
-              //     })),
-              //     { transaction, updateOnDuplicate: ['name', 'ClassId'] }
-              //   );
-
-              //   await Method.bulkCreate(
-              //     classObj.methods.map((method) => ({
-              //       name: method.name,
-              //       ClassId: classRecord.id,
-              //     })),
-              //     { transaction, updateOnDuplicate: ['name', 'ClassId'] }
-              //   );
-
-              //   await Dependency.bulkCreate(
-              //     classObj.dependencies.map((dependency) => ({
-              //       name: dependency.name,
-              //       ClassId: classRecord.id,
-              //     })),
-              //     { transaction, updateOnDuplicate: ['name', 'ClassId'] }
-              //   );
-
-              //   await GenericType.bulkCreate(
-              //     classObj.genericTypes.map((genericType) => ({
-              //       name: genericType.name,
-              //       ClassId: classRecord.id,
-              //     })),
-              //     { transaction, updateOnDuplicate: ['name', 'ClassId'] }
-              //   );
-              // }
               // Insert the interface records and associate them with the file
               const interfaceRecords = await Interface.bulkCreate(
                 interfaces.map((interfaceObj) => ({
@@ -110,34 +73,6 @@ class DatasetExportPlugin {
                 })),
                 { transaction, updateOnDuplicate: ['name', 'FileId'] }
               );
-              // // Insert interface properties, methods, dependencies, and generic types
-              // for (const [index, interfaceObj] of interfaces.entries()) {
-              //   const interfaceRecord = interfaceRecords[index];
-
-              //   await Property.bulkCreate(
-              //     interfaceObj.properties.map((property) => ({
-              //       name: property.name,
-              //       InterfaceId: interfaceRecord.id,
-              //     })),
-              //     { transaction, updateOnDuplicate: ['name', 'InterfaceId'] }
-              //   );
-
-              //   await Method.bulkCreate(
-              //     interfaceObj.methods.map((method) => ({
-              //       name: method.name,
-              //       InterfaceId: interfaceRecord.id,
-              //     })),
-              //     { transaction, updateOnDuplicate: ['name', 'InterfaceId'] }
-              //   );
-
-              //   await Dependency.bulkCreate(
-              //     interfaceObj.dependencies.map((dependency) => ({
-              //       name: dependency.name,
-              //       InterfaceId: interfaceRecord.id,
-              //     })),
-              //     { transaction, updateOnDuplicate: ['name', 'InterfaceId'] }
-              //   );
-
               //   if (interfaceObj.genericTypes) {
               //     await Type.findOrCreate({
               //       name: interfaceObj.genericTypes,
@@ -180,8 +115,8 @@ class DatasetExportPlugin {
                 );
               }
 
-              const typeNames = [...new Set(functions.map(func => func.returnType))];
-              
+              const typeNames = [...new Set(functions.map(func => func.returnType))].flat();
+
               console.info("Inserting Types Type.bulkCreate", typeNames)
               const insertedTypes = await Type.bulkCreate(
                 typeNames.map(name => ({ name })),
@@ -205,7 +140,7 @@ class DatasetExportPlugin {
                   updateOnDuplicate: ['name', 'returnType', 'FileId', 'TypeId'],
                 }
               );
-              
+
 
               console.info("Inserting generic types", functions[0]?.genericTypes)
               // Insert function generic types
@@ -250,11 +185,12 @@ class DatasetExportPlugin {
                   })),
                   { transaction, updateOnDuplicate: ['name', 'TypeId'] }
                 );
-                              
+
                 await functionRecord.setParameters(parameterRecords, { transaction });
               }
 
               // Insert the import records and associate them with the file
+              console.log("Bulk creating imports", imports)
               await Import.bulkCreate(
                 imports.map((importObj) => ({
                   path: importObj.path,
@@ -269,9 +205,10 @@ class DatasetExportPlugin {
               );
 
               // Insert the export records and associate them with the file
+              console.log("Bulk creating exports", exports)
               await Export.bulkCreate(
                 exports.map((exportName) => ({
-                  name: exportName,
+                  name: exportName.name,
                   FileId: file.id,
                 })),
                 { transaction, updateOnDuplicate: ['name', 'FileId'] }
@@ -314,4 +251,4 @@ class DatasetExportPlugin {
   }
 }
 
-module.exports = DatasetExportPlugin;
+module.exports = KnowledgeGraphPlugin;
